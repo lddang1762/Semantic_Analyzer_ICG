@@ -4,7 +4,7 @@
 int MEMORY_ADDRESS = 2000;
 int recent_type = -1; // 0 = int, 1 = float, 2 = bool
 int instr_address = 1;
-token save;
+
 
                       //     0   1   2   3   4  5    6   7   8   9   10  11  12  13 14  15  16  17  18  19  20  21  22  23   24  25  26
 //                           id  =   +  -   *    /   (   )   ;   ,  int  fl  bo  $  if  th  el  ei  do  wh  whe be  en  <    >  num  t/f
@@ -86,7 +86,7 @@ enum Operations{
 struct i_table_symbol{
   int address;
   Operations op;
-  string operand;
+  int operand;
 };
 
 vector<i_table_symbol> instr_table;
@@ -98,11 +98,14 @@ struct s_table_symbol{
 };
 
 vector<s_table_symbol> symbol_table;
+s_table_symbol save;
 
 void parse(vector<token> &statement);
 void rule(int ruleNum, token tok);
 Symbols tok_to_sym(token tok);
 void print_instr_table();
+void add_instr_table();
+void gen_instr(int ruleNum);
 void print_symbol_table();
 void add_symbol_table(token tok);
 bool check_symbol_table(token tok);
@@ -155,6 +158,7 @@ void parse(vector<token> &statement){
           //   symbol_table[i.lex] = MEMORY_ADDRESS++;
           // }
         }
+        gen_instr(parse_table[TOS][tok_to_sym(i) - 13]);
       }
       else{
         string err = "Error: Incorrect syntax. 2\n";
@@ -168,10 +172,88 @@ void parse(vector<token> &statement){
 }
 
 void print_instr_table(){
+  string op = "", operand = "";
   for(int x = 0; x < instr_table.size(); x++){
     i_table_symbol ts = instr_table[x];
-    cout << left << setw(10) << ts.address<< setw(15) << ts.op << setw(15) << ts.operand << endl;
-    outFile << left << setw(10) << ts.address<< setw(15) << ts.op << setw(15) << ts.operand << endl;
+    operand = to_string(ts.operand);
+    if(ts.op == PUSHI ){ op = "PUSHI"; }
+    else if(ts.op == PUSHM ){ op = "PUSHM"; }
+    else if(ts.op == POPM ){ op = "POPM"; }
+    else if(ts.op == ADD ){ op = "ADD"; operand = "";}
+    else if(ts.op == SUB ){ op = "SUB"; operand = ""; }
+    else if(ts.op == MUL ){ op = "MUL"; operand = ""; }
+    else if(ts.op == DIV ){ op = "DIV"; operand = ""; }
+    cout << left << setw(10) << ts.address<< setw(15) << op << setw(15) << operand << endl;
+    outFile << left << setw(10) << ts.address<< setw(15) << op << setw(15) << operand << endl;
+  }
+  cout << endl;
+  outFile << endl;
+}
+
+void add_instr_table(){
+  i_table_symbol ts;
+}
+
+void gen_instr(int ruleNum){
+  i_table_symbol ts;
+  // int addr, operand;
+  // Operations op;
+
+  switch(ruleNum){
+    case 3:
+     // addr = instr_address++;
+     // op = POPM;
+     // operand = save.memory;
+     ts.address = instr_address++;
+     ts.op = POPM;
+     ts.operand = save.memory;
+     instr_table.push_back(ts);
+    break;
+
+    case 5:
+    ts.address = instr_address++;
+    ts.op = ADD;
+    ts.operand = save.memory;
+    instr_table.push_back(ts);
+    break;
+
+    case 6:
+    ts.address = instr_address++;
+    ts.op = SUB;
+    ts.operand = save.memory;
+    instr_table.push_back(ts);
+    break;
+
+    case 9:
+    ts.address = instr_address++;
+    ts.op = MUL;
+    ts.operand = save.memory;
+    instr_table.push_back(ts);
+    break;
+
+    case 10:
+    ts.address = instr_address++;
+    ts.op = DIV;
+    ts.operand = save.memory;
+    instr_table.push_back(ts);
+    break;
+
+    case 12:
+    ts.address = instr_address++;
+    ts.op = PUSHM;
+    ts.operand = save.memory;
+    instr_table.push_back(ts);
+    break;
+
+    case 30:
+    ts.address = instr_address++;
+    ts.op = PUSHI;
+    ts.operand = 0;
+    instr_table.push_back(ts);
+    break;
+
+    default:
+    break;
   }
 }
 
@@ -195,6 +277,7 @@ void add_symbol_table(token tok){
     else if(recent_type == 3){ ts.type = "boolean"; }
     else{ ts.type = "error"; }
     symbol_table.push_back(ts);
+    save = ts;
   }
 }
 

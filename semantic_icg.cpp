@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <stack>
+#include <map>
 #include <iomanip>
 #include "lexer.h"
 #include "syntax.h"
@@ -21,6 +22,7 @@ int main(int argc, char* argv[]){
     }
   }
   //print_tokens();
+  print_symbol_table();
   inFile.close();
   outFile.close();
   return 0;

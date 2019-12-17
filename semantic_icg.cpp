@@ -22,6 +22,7 @@ int main(int argc, char* argv[]){
     }
   }
   //print_tokens();
+  print_instr_table();
   print_symbol_table();
   inFile.close();
   outFile.close();

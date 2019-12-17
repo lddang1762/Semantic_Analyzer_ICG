@@ -31,11 +31,10 @@ int main(int argc, char* argv[]){
 
 void readfile(){
   string ifname = "", ofname = "";
-  // cout << "Enter input file name: ";
-  // cin >> ifname;
+  cout << "Enter input file name: ";
+  cin >> ifname;
   try{
-    //inFile.open(ifname);
-    inFile.open("a.txt");
+    inFile.open(ifname);
     if(!inFile.is_open()){
       string err = "Error: File failed to open.\n";
       throw err;
@@ -45,8 +44,7 @@ void readfile(){
     cout << e;
     exit(0);
   }
-  // cout << "Enter output file name: ";
-  // cin >> ofname;
-  // outFile.open(ofname);
-  outFile.open("o.txt");
+  cout << "Enter output file name: ";
+  cin >> ofname;
+  outFile.open(ofname);
 }
